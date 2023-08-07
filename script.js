@@ -1,18 +1,21 @@
 const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
 let particlesArray = [];
-let adjustX = -8;
-let adjustY = -30;
-let textSize = canvas.width / 25;
+let adjustX = 0;
+let adjustY = 0;
+let textX = 0;
+let textY = 0;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+
 window.addEventListener("resize", function() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
+    canvas.height = window.innerHeight;    
 })
+
+let textSize = canvas.width / 100;
 
 const mouse = {
     x: undefined,
@@ -28,13 +31,16 @@ canvas.addEventListener("click", function(event) {
 canvas.addEventListener("mousemove", function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
-
 })
 
 ctx.fillStyle = "white";
-ctx.font = "18px Verdana";
-ctx.fillText("saturday", 30, 60);
+ctx.font = "21px sans-serif";
+ctx.textAlign = "left";    
+ctx.textBaseline = "top";
+ctx.fillText("sunday", (canvas.width/6)/textSize, (canvas.height/6)/textSize);
+
 const textCoordinates = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
 
 class Particle {
     constructor(x, y) {
@@ -90,6 +96,7 @@ function init() {
             if (textCoordinates.data[(y * 4 * textCoordinates.width) + (x * 4) + 3] > 200) {
                 let positionX = x + adjustX;
                 let positionY = y + adjustY;
+                console.log(positionX, positionY)
                 particlesArray.push(new Particle(positionX * textSize, positionY * textSize));
             }
         }
@@ -118,14 +125,14 @@ function handleParticles() {
     }
 }
 
-function connect() {
+function connectParticles() {
     for (i = 0; i < particlesArray.length; i++) {
         for (j = i; j < particlesArray.length; j++) {
             let dx = particlesArray[i].x - particlesArray[j].x;
             let dy = particlesArray[i].y - particlesArray[j].y;
             let distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < 30) {
-                ctx.strokeStyle = "orange";
+            if (distance < 40) {
+                ctx.strokeStyle = "yellow";
                 ctx.lineWidth = 1;
                 ctx.beginPath(); // Start a new path
                 ctx.moveTo(particlesArray[i].x, particlesArray[i].y); // Move the pen to
@@ -141,7 +148,7 @@ function connect() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     handleParticles();
-    connect();
+    connectParticles();
     requestAnimationFrame(animate);
 }
 animate();
